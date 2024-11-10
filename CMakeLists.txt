@@ -91,6 +91,7 @@ set(SDK_SOURCES
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_spi.c
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_adc.c
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_tim.c
+    ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_dma.c
   )
 
 set(RTT_SOURCES
@@ -103,11 +104,13 @@ set(SOURCE_FILES
     ${RTT_SOURCES}
     src/main.c
     src/drivers/board.c
+    src/drivers/adc.c
     src/drivers/button.c
     src/drivers/external.c
     src/drivers/mt6816.c
     src/drivers/oled.c
     src/drivers/led.c
+    src/drivers/can.c
     src/drivers/stepper.c
 	)
 

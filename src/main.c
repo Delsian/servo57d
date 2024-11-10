@@ -34,6 +34,7 @@ int main(void)
 {
     SEGGER_RTT_Init();
     print_log("MKS Servo57d v.%s\n", FW_VERSION);
+    print_log("Core clock: %d\n", SystemCoreClock);
     board_init();
     LedOn(); /*Turn on Led1*/
     oled_init();
@@ -42,9 +43,11 @@ int main(void)
     {       
         /* Insert delay */
         Delay(0x28FFFF);
+        ADC_EnableSoftwareStartConv(ADC, ENABLE);
         uint16_t sample = mt6816_read();
         float angle = (360.0 / 16384.0) * sample;
         oled_write((uint16_t)angle);
+        print_log("adc %d\n", get_adc());
     }
 }
 

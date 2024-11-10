@@ -7,7 +7,7 @@
         {
             "name": "Cortex Debug",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/servo57.elf",
+            "executable": "${workspaceFolder}/build/servo57.elf",
             "request": "launch",
             "type": "cortex-debug",
             "runToEntryPoint": "main",
@@ -18,7 +18,8 @@
             "interface": "swd",
             "serialNumber": "", //If you have more than one J-Link probe, add the serial number here.
             "svdFile": "${workspaceFolder}/N32L406.svd",
-            "armToolchainPath": "/usr/bin"
+            "armToolchainPath": "/usr/bin",
+            "preLaunchTask": "build"
         }
     ]
 }

@@ -11,15 +11,21 @@ void board_init(void) {
     /* PCLK1 = HCLK/4 */
     RCC_ConfigPclk2(RCC_HCLK_DIV4);
 
-    // --- RCC Init     
-    RCC_EnableAPB1PeriphClk(RCC_APB1_PERIPH_I2C1, ENABLE);
+    // --- RCC Init
+    RCC_EnableAHBPeriphClk(
+            RCC_AHB_PERIPH_DMA    | 
+            RCC_AHB_PERIPH_ADC, ENABLE);
+    RCC_EnableAPB1PeriphClk(
+            RCC_APB1_PERIPH_I2C1  | 
+            RCC_APB1_PERIPH_TIM2  |
+            RCC_APB1_PERIPH_TIM3, ENABLE);
     RCC_EnableAPB2PeriphClk(
             RCC_APB2_PERIPH_SPI1  |
             RCC_APB2_PERIPH_TIM1  |
             RCC_APB2_PERIPH_AFIO  |
             RCC_APB2_PERIPH_GPIOA |  // I2C1
             RCC_APB2_PERIPH_GPIOB |  // SPI1
-            RCC_APB2_PERIPH_GPIOD, ENABLE); // LED1
+            RCC_APB2_PERIPH_GPIOD, ENABLE);
 
     // --- Timers
     NVIC_InitStructure.NVIC_IRQChannel                   = TIM1_UP_IRQn;
@@ -59,8 +65,10 @@ void board_init(void) {
     led_init();
     mt6816_init();
     stepper_init();
+    adc_init();
     buttons_init();
     external_init();
+    can_init();
 
     /* Setup SysTick Timer for 1 usec interrupts  */
     if (SysTick_Config(SystemCoreClock / 1000))

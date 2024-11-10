@@ -57,8 +57,9 @@ extern "C" {
 
 /* Current ADC */
 
-#define CURRENT_A           GPIO_PIN_2
-#define CURRENT_B           GPIO_PIN_1
+#define ADC_CURRENT_A       ADC_CH_3_PA2
+#define ADC_CURRENT_B       ADC_CH_2_PA1
+#define ADC_VBUS            ADC_CH_4_PA3
 
 /* Stepper drivers */
 
@@ -73,11 +74,13 @@ extern "C" {
 
 void board_init(void);
 void oled_init(void);
+void adc_init(void);
 void led_init(void);
 void mt6816_init(void);
 void stepper_init(void);
 void buttons_init(void);
 void external_init(void);
+void can_init(void);
 
 void buttons_tick(void);
 void ext_set(uint16_t pin, uint8_t val);
@@ -91,6 +94,8 @@ void print_log(const char * sFormat, ...);
 void LedOn(void);
 void LedOff(void);
 void LedBlink(void);
+
+uint16_t get_adc(void);
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "build",
+			"command": "build",
+			"targets": [
+				"all"
+			],
+			"problemMatcher": [
+                "$gcc"
+            ],
+			"group": "build",
+			"detail": "CMake template build task"
+		}
+	]
+}
