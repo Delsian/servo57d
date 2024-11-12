@@ -1,23 +1,22 @@
 #include "board.h"
 #include <stdlib.h>
 
-static uint16_t speed_g = 2000;
-uint16_t CCR1_Val       = 333;
-uint16_t CCR2_Val       = 249;
-uint16_t CCR3_Val       = 166;
-uint16_t CCR4_Val       = 83;
+#define MICROSTEPS 16
+
+static uint16_t speed_g = 0;
 static OCInitType TIM_OCInitStructure;
 
 static const uint16_t step16[] = {
     0, 10, 20, 29, 38, 47, 56, 63, 71, 77, 83, 88, 92, 96, 98, 100
 };
-static uint16_t generated[32];
+static uint16_t generated[MICROSTEPS*2];
 
 static void generate_table(void) {
     uint16_t k = speed_g/200;
-    for (int i = 0; i<16; i++) {
-        generated[i] = generated[31 - i] = step16[i] * k;
+    for (int i = 0; i < MICROSTEPS; i++) {
+        generated[i] = generated[(MICROSTEPS*2-1) - i] = step16[i] * k;
     }
+    TIM3->AR = (speed_g == 0) ? STEPPER_MIN_SPEED : speed_g;
 }
 
 void stepper_init(void) {
@@ -38,7 +37,7 @@ void stepper_init(void) {
 
     /* TIM3 configuration */
     TIM_InitTimBaseStruct(&TIM_TimeBaseStructure);    
-    TIM_TimeBaseStructure.Period    = speed_g;
+    TIM_TimeBaseStructure.Period    = STEPPER_MIN_SPEED;
     TIM_TimeBaseStructure.Prescaler = 1;
     TIM_TimeBaseStructure.ClkDiv    = 0;
     TIM_TimeBaseStructure.CntMode   = TIM_CNT_MODE_UP;
@@ -49,26 +48,26 @@ void stepper_init(void) {
     TIM_InitOcStruct(&TIM_OCInitStructure);    
     TIM_OCInitStructure.OcMode      = TIM_OCMODE_PWM1;
     TIM_OCInitStructure.OutputState = TIM_OUTPUT_STATE_ENABLE;
-    TIM_OCInitStructure.Pulse       = CCR1_Val;
+    TIM_OCInitStructure.Pulse       = 0;
     TIM_OCInitStructure.OcPolarity  = TIM_OC_POLARITY_HIGH;
     TIM_InitOc1(TIM3, &TIM_OCInitStructure);
     TIM_ConfigOc1Preload(TIM3, TIM_OC_PRE_LOAD_ENABLE);
 
     /* PWM1 Mode configuration: Channel2 */
     TIM_OCInitStructure.OutputState = TIM_OUTPUT_STATE_ENABLE;
-    TIM_OCInitStructure.Pulse       = CCR2_Val;
+    TIM_OCInitStructure.Pulse       = 0;
     TIM_InitOc2(TIM3, &TIM_OCInitStructure);
     TIM_ConfigOc2Preload(TIM3, TIM_OC_PRE_LOAD_ENABLE);
 
     /* PWM1 Mode configuration: Channel3 */
     TIM_OCInitStructure.OutputState = TIM_OUTPUT_STATE_ENABLE;
-    TIM_OCInitStructure.Pulse       = CCR3_Val;
+    TIM_OCInitStructure.Pulse       = 0;
     TIM_InitOc3(TIM3, &TIM_OCInitStructure);
     TIM_ConfigOc3Preload(TIM3, TIM_OC_PRE_LOAD_ENABLE);
 
     /* PWM1 Mode configuration: Channel4 */
     TIM_OCInitStructure.OutputState = TIM_OUTPUT_STATE_ENABLE;
-    TIM_OCInitStructure.Pulse       = CCR4_Val;
+    TIM_OCInitStructure.Pulse       = 0;
     TIM_InitOc4(TIM3, &TIM_OCInitStructure);
     TIM_ConfigOc4Preload(TIM3, TIM_OC_PRE_LOAD_ENABLE);
 
@@ -119,8 +118,15 @@ void TIM3_IRQHandler(void) {
     default:
     }
     if (++idx>64) idx = 0;
+    mt6816_request();
 }
 
-void stepper_set_speed(int8_t speed) {
+void stepper_set_speed(int16_t speed) {
     speed_g = speed;
+    generate_table();
+    print_log("Set speed: %u\n", speed);
+}
+
+int16_t stepper_get_speed(void) {
+    return speed_g;
 }

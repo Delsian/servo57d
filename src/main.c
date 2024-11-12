@@ -31,6 +31,7 @@ void assert_failed(const uint8_t* expr, const uint8_t* file, uint32_t line)
 #endif // USE_FULL_ASSERT
 
 int main(void)
+
 {
     SEGGER_RTT_Init();
     print_log("MKS Servo57d v.%s\n", FW_VERSION);
@@ -43,11 +44,11 @@ int main(void)
     {       
         /* Insert delay */
         Delay(0x28FFFF);
-        ADC_EnableSoftwareStartConv(ADC, ENABLE);
+        //ADC_EnableSoftwareStartConv(ADC, ENABLE);
         uint16_t sample = mt6816_read();
         float angle = (360.0 / 16384.0) * sample;
         oled_write((uint16_t)angle);
-        print_log("adc %d\n", get_adc());
+        //print_log("adc %d\n", get_adc());
     }
 }
 

@@ -20,21 +20,36 @@ void buttons_init(void) {
 }
 
 void buttons_tick(void) {
+    uint16_t speed = stepper_get_speed();
     uint8_t pins = (BTN1_PORT->PID >> 8) & 0x3;
     pins |= (BTN3_PORT->PID >> 13) & 4;
     if(button_state != pins) {
         if ((button_state^pins) & 1) {
-            stepper_set_speed(0);
             print_log("button Enter\n");
+            speed = 0;
         }
         if ((button_state^pins) & 2) {
-            stepper_set_speed(1);
+            if (speed == 0) {
+                speed = STEPPER_MIN_SPEED;
+            } else {
+                speed -= 50;
+                if (speed < STEPPER_MAX_SPEED) {
+                    speed = STEPPER_MAX_SPEED;
+                }
+            }
             print_log("button Menu\n");
         }
         if ((button_state^pins) & 4) {
-            stepper_set_speed(-1);
+            if (speed > 0) {
+                if (speed > STEPPER_MIN_SPEED - 50) {
+                    speed = STEPPER_MIN_SPEED;
+                } else {
+                    speed += 50;
+                }
+            }
             print_log("button Next\n");
         }
         button_state = pins;
+        stepper_set_speed(speed);
     }
 }
