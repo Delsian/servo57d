@@ -64,6 +64,7 @@ extern "C" {
 #define ADC_CURRENT_A       ADC_CH_3_PA2
 #define ADC_CURRENT_B       ADC_CH_2_PA1
 #define ADC_VBUS            ADC_CH_4_PA3
+#define ADC_DMA_Channel     DMA_CH1
 
 /* Stepper drivers */
 
