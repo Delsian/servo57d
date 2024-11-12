@@ -54,6 +54,10 @@ extern "C" {
 #define MT6816_MISO         GPIO_PIN_4
 #define MT6816_CLK          GPIO_PIN_3
 #define MT6816_CS           GPIO_PIN_6
+#define MT6816_DMA_Channel  DMA_CH4
+#define RX_DMA_Channel      DMA_CH5
+#define MT6816_SPI          SPI1
+#define MT6816_DR_Base      SPI1_BASE+0x0c //0x4001300C
 
 /* Current ADC */
 
@@ -70,13 +74,17 @@ extern "C" {
 #define PHASE_B1_PIN        GPIO_PIN_0
 #define PHASE_B2_PIN        GPIO_PIN_1
 
+/* Parameters */
+
+#define STEPPER_MIN_SPEED 8000
+#define STEPPER_MAX_SPEED 1200
+
 /* Prototypes */
 
 void board_init(void);
 void oled_init(void);
 void adc_init(void);
 void led_init(void);
-void mt6816_init(void);
 void stepper_init(void);
 void buttons_init(void);
 void external_init(void);
@@ -85,9 +93,14 @@ void can_init(void);
 void buttons_tick(void);
 void ext_set(uint16_t pin, uint8_t val);
 
-void stepper_set_speed(int8_t speed);
+void stepper_set_speed(int16_t speed);
+int16_t stepper_get_speed(void);
 
+/* Angle sensor */
+void mt6816_init(void);
 uint16_t mt6816_read(void);
+void mt6816_request(void);
+
 // RTT print
 void print_log(const char * sFormat, ...);
 
