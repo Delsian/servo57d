@@ -91,7 +91,9 @@ void mt6816_init(void) {
 }
 
 uint16_t mt6816_read(void) {
-    uint16_t sample = ((uint16_t)mt6816_buf[1] < 8) | mt6816_buf[2];
+    uint16_t sample = mt6816_buf[1];
+    sample <<= 8;
+    sample |= mt6816_buf[2];
     //print_log("RX %04x\n", sample);
     return sample>>2;
 }

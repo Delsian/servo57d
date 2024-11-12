@@ -31,7 +31,6 @@ void assert_failed(const uint8_t* expr, const uint8_t* file, uint32_t line)
 #endif // USE_FULL_ASSERT
 
 int main(void)
-
 {
     SEGGER_RTT_Init();
     print_log("MKS Servo57d v.%s\n", FW_VERSION);
