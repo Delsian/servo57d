@@ -92,6 +92,7 @@ set(SDK_SOURCES
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_adc.c
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_tim.c
     ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_dma.c
+    ${SDK_DIR}/n32l40x_std_periph_driver/src/n32l40x_can.c
   )
 
 set(RTT_SOURCES

@@ -36,9 +36,8 @@ extern "C" {
 #define EXT6_PIN    GPIO_PIN_14 /* M_OUT1 */
 #define EXT7_PIN    GPIO_PIN_15 /* M_OUT2 */
 
-/* OLED ssd1306 */
+/* OLED ssd1306 Configuration */
 
-// I2C Configuration
 #define SSD1306_SCL         GPIO_PIN_4
 #define SSD1306_SDA         GPIO_PIN_5
 #define SSD1306_RESET       GPIO_PIN_2
@@ -58,6 +57,12 @@ extern "C" {
 #define RX_DMA_Channel      DMA_CH5
 #define MT6816_SPI          SPI1
 #define MT6816_DR_Base      SPI1_BASE+0x0c //0x4001300C
+
+/* CAN */
+
+#define CAN_PORT           GPIOA
+#define CAN_TX_PIN         GPIO_PIN_12
+#define CAN_RX_PIN         GPIO_PIN_11
 
 /* Current ADC */
 
@@ -101,6 +106,9 @@ int16_t stepper_get_speed(void);
 void mt6816_init(void);
 uint16_t mt6816_read(void);
 void mt6816_request(void);
+
+// CAN
+void can_tx(uint8_t *data, uint8_t len) ;
 
 // RTT print
 void print_log(const char * sFormat, ...);

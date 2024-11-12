@@ -16,7 +16,8 @@ void board_init(void) {
             RCC_AHB_PERIPH_DMA    | 
             RCC_AHB_PERIPH_ADC, ENABLE);
     RCC_EnableAPB1PeriphClk(
-            RCC_APB1_PERIPH_I2C1  | 
+            RCC_APB1_PERIPH_I2C1  |
+            RCC_APB1_PERIPH_CAN   |
             RCC_APB1_PERIPH_TIM2  |
             RCC_APB1_PERIPH_TIM3, ENABLE);
     RCC_EnableAPB2PeriphClk(
@@ -33,6 +34,12 @@ void board_init(void) {
     NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
+
+   /* Setup SysTick Timer for 1 msec interrupts  SystemCoreClock */
+   if (SysTick_Config(SystemCoreClock / 1000)) {
+      /* Capture error */
+      while (1);
+   }
 
     // --- i2c (OLED ssd1306)
     /*PA4 -- SCL; PA5 -- SDA*/
