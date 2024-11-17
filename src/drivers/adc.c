@@ -1,7 +1,10 @@
-#include "board.h"
+#include "servo57.h"
 #include <stdlib.h>
 
 static __IO uint16_t ADCConvertedValue[4];
+static int16_t Temper;  /* CPU core temperature */
+static uint16_t Vbus;   /* Input voltage */
+
 static uint16_t  V30 = 0;
 /*xx mv per degree Celsius  by datasheet define*/
 #define AVG_SLOPE  4
@@ -11,6 +14,7 @@ static uint16_t  V30 = 0;
 void adc_init(void) {
     ADC_InitType ADC_InitStructure;
     DMA_InitType DMA_InitStructure;
+    NVIC_InitType NVIC_InitStructure;
 
     /* RCC_ADCHCLK_DIV16*/
     ADC_ConfigClk(ADC_CTRL3_CKMOD_AHB, RCC_ADCHCLK_DIV16);
@@ -30,6 +34,14 @@ void adc_init(void) {
     DMA_InitStructure.Mem2Mem        = DMA_M2M_DISABLE;
     DMA_Init(ADC_DMA_Channel, &DMA_InitStructure);
     DMA_RequestRemap(DMA_REMAP_ADC1, DMA, ADC_DMA_Channel, ENABLE);
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    NVIC_InitStructure.NVIC_IRQChannel                   = DMA_Channel1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    DMA_ConfigInt(ADC_DMA_Channel, DMA_INT_TXC, ENABLE);
 
     /* Enable DMA channel1 */
     DMA_EnableChannel(ADC_DMA_Channel, ENABLE);
@@ -69,8 +81,23 @@ void adc_init(void) {
 
 uint16_t get_adc(void) {
     /* Input voltage Vadc = (R29/(R28+R29)) * Vin */
-    uint16_t Vin = ADCConvertedValue[2] / 74; 
-    int16_t Temper=(int16_t)((((V30 - ADCConvertedValue[3])*33000)/40950)/4 + 28);
-     print_log("adc %u %u %u %d\n", ADCConvertedValue[0], ADCConvertedValue[1], Vin, Temper);
+     print_log("adc %u %u %u %d\n", ADCConvertedValue[0], ADCConvertedValue[1], Vbus, Temper);
     return ADCConvertedValue[0]; 
+}
+
+void DMA_Channel1_IRQHandler(void) {
+    if (DMA->INTSTS & DMA_INT_TXC1) {
+        DMA->INTCLR |= DMA_INT_TXC1;
+        Temper=(int16_t)((((V30 - ADCConvertedValue[3])*33000)/40950)/4 + 28);
+        Vbus = ADCConvertedValue[2] / 74;
+        // ToDo current
+    }
+}
+
+uint16_t adc_get_temperature(void) {
+    return Temper;
+}
+
+uint16_t adc_get_vbus(void) {
+    return Vbus;
 }

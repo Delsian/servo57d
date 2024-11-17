@@ -64,6 +64,7 @@ set(CMAKE_ASM_FLAGS "${OBJECT_GEN_FLAGS} -x assembler-with-cpp " CACHE INTERNAL 
 project(servo57 LANGUAGES C ASM VERSION 1.0.0)
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -DVERSION=\"${CMAKE_PROJECT_VERSION}\"")
 set(SDK_DIR                        ${PROJECT_SOURCE_DIR}/SDK CACHE PATH "N32 SDK directory")
+set(KLIPPER_DIR                    ${PROJECT_SOURCE_DIR}/../klipper/src CACHE PATH "Klipper directory")
 
   # -Wl,--gc-sections     Perform the dead code elimination.
 # --specs=nano.specs    Link with newlib-nano.
@@ -77,6 +78,8 @@ include_directories(${PROJECT_SOURCE_DIR}/RTT)
 include_directories(${SDK_DIR}/CMSIS/core)
 include_directories(${SDK_DIR}/CMSIS/device)
 include_directories(${SDK_DIR}/n32l40x_std_periph_driver/inc)
+include_directories(${KLIPPER_DIR})
+include_directories(${KLIPPER_DIR}/../lib/fast-hash)
 include_directories(${CMAKE_BINARY_DIR})
 
 set(SDK_SOURCES
@@ -100,10 +103,22 @@ set(RTT_SOURCES
   ${PROJECT_SOURCE_DIR}/RTT/SEGGER_RTT_printf.c
   ${PROJECT_SOURCE_DIR}/RTT/SEGGER_RTT.c
 )
+
+set(KLIPPER_SOURCES
+  ${KLIPPER_DIR}/sched.c
+  ${KLIPPER_DIR}/generic/armcm_timer.c
+  ${KLIPPER_DIR}/generic/armcm_irq.c
+  ${KLIPPER_DIR}/generic/canserial.c
+  ${KLIPPER_DIR}/../lib/fast-hash/fasthash.c
+)
+
 set(SOURCE_FILES
     ${SDK_SOURCES}
     ${RTT_SOURCES}
+    ${KLIPPER_SOURCES}
     src/main.c
+    src/compile_time_request.c
+    src/dummy.c
     src/drivers/board.c
     src/drivers/adc.c
     src/drivers/button.c

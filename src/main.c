@@ -1,9 +1,10 @@
 
-#include "board.h"
 #include <stdio.h>
 #include <stdint.h>
+#include "servo57.h"
 #include <SEGGER_RTT.h>
 #include "fw_version.h"
+#include "sched.h"
 
 /**
  * @brief  Inserts a delay time.
@@ -40,16 +41,16 @@ int main(void)
     LedOn(); /*Turn on Led1*/
     oled_init();
 
-    while (1)
+    sched_main();
+    /*while (1)
     {       
-        /* Insert delay */
         Delay(0x28FFFF);
         uint16_t sample = mt6816_read();
         float angle = (360.0 / 16384.0) * sample;
         oled_write((uint16_t)angle);
         get_adc();
-        can_tx(msg, 5);
-    }
+        //can_tx(msg, 5);
+    }*/
 }
 
 void print_log(const char * sFormat, ...)
@@ -58,4 +59,9 @@ void print_log(const char * sFormat, ...)
 	va_start(ParamList, sFormat);
 	SEGGER_RTT_vprintf(0, sFormat, &ParamList);
 	va_end(ParamList);
+}
+
+// shutdown() compatibility code
+uint8_t ctr_lookup_static_string(const char *str) {
+    return 0;
 }

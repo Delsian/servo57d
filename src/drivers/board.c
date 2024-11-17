@@ -85,10 +85,6 @@ void board_init(void) {
     }
 }
 
-void SysTick_Handler(void) {
-    buttons_tick();
-}
-
 void SVC_Handler(void) {
 }
 

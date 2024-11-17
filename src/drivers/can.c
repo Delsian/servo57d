@@ -1,5 +1,6 @@
-#include "board.h"
+#include "servo57.h"
 #include <stdlib.h>
+#include <generic/canserial.h>
 
 static CanTxMessage CAN_TxMessage;
 static CanRxMessage CAN_RxMessage;
@@ -8,6 +9,7 @@ void can_init(void) {
     GPIO_InitType GPIO_InitStructure;
     NVIC_InitType NVIC_InitStructure;
     CAN_InitType CAN_InitStructure;
+    CAN_FilterInitType CAN_FilterInitStructure;
 
     GPIO_InitStruct(&GPIO_InitStructure);
     GPIO_InitStructure.Pin       = CAN_RX_PIN;
@@ -44,6 +46,20 @@ void can_init(void) {
     NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 0x0;
     NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
+
+    CAN_FilterInitStructure.Filter_Num            = 0;
+    CAN_FilterInitStructure.Filter_Mode           = CAN_Filter_IdMaskMode;
+    CAN_FilterInitStructure.Filter_Scale          = CAN_Filter_32bitScale;
+    CAN_FilterInitStructure.Filter_HighId         = CANBUS_ID_ADMIN >> 16;
+    CAN_FilterInitStructure.Filter_LowId          = CANBUS_ID_ADMIN & 0xFFFF;
+    CAN_FilterInitStructure.FilterMask_HighId     = 0;
+    CAN_FilterInitStructure.FilterMask_LowId      = 0;
+    CAN_FilterInitStructure.Filter_FIFOAssignment = CAN_FIFO0;
+    CAN_FilterInitStructure.Filter_Act            = ENABLE;
+    CAN_InitFilter(&CAN_FilterInitStructure);
+    CAN_INTConfig(CAN, CAN_INT_FMP0, ENABLE);
+
+    canserial_set_uuid((void*)UID_BASE, UID_LENGTH);
 }
 
 void can_tx(uint8_t *data, uint8_t len) {
@@ -59,11 +75,10 @@ void can_tx(uint8_t *data, uint8_t len) {
 }
 
 void CAN_RX0_IRQHandler(void) {
-        /* receive interrupt */
+    /* receive interrupt */
     if (CAN_GetIntStatus(CAN, CAN_INT_FMP0)) {
         CAN_ReceiveMessage(CAN, CAN_FIFO0, &CAN_RxMessage);
         CAN_ClearINTPendingBit(CAN, CAN_INT_FMP0);
-        print_log("CAN RX\n");
     }
     /* send interrupt */
     else if (CAN_GetFlagSTS(CAN, CAN_FLAG_RQCPM0)) {

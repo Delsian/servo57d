@@ -1,4 +1,4 @@
-#include "board.h"
+#include "servo57.h"
 #include <stdlib.h>
 
 #define MICROSTEPS 16
@@ -116,6 +116,7 @@ void TIM3_IRQHandler(void) {
         TIM3->CCDAT4 = 0;
         break;
     default:
+        break;
     }
     if (++idx>64) idx = 0;
     mt6816_request();

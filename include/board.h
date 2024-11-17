@@ -80,10 +80,6 @@ extern "C" {
 #define PHASE_B1_PIN        GPIO_PIN_0
 #define PHASE_B2_PIN        GPIO_PIN_1
 
-/* Parameters */
-
-#define STEPPER_MIN_SPEED 8000
-#define STEPPER_MAX_SPEED 1200
 
 /* Prototypes */
 
@@ -95,29 +91,10 @@ void stepper_init(void);
 void buttons_init(void);
 void external_init(void);
 void can_init(void);
+void mt6816_init(void);
 
 void buttons_tick(void);
 void ext_set(uint16_t pin, uint8_t val);
-
-void stepper_set_speed(int16_t speed);
-int16_t stepper_get_speed(void);
-
-/* Angle sensor */
-void mt6816_init(void);
-uint16_t mt6816_read(void);
-void mt6816_request(void);
-
-// CAN
-void can_tx(uint8_t *data, uint8_t len) ;
-
-// RTT print
-void print_log(const char * sFormat, ...);
-
-void LedOn(void);
-void LedOff(void);
-void LedBlink(void);
-
-uint16_t get_adc(void);
 
 #ifdef __cplusplus
 }
